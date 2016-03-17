@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+	<meta charset="UTF-8">
+	<title>Phone Notebook</title>
+	<style type="text/css">
+
+		* {
+			border: none;
+			box-sizing: border-box;
+		}
+
+		body {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			padding: 0px;
+			margin: 0px;
+		}
+
+		#root {
+			width: 575px;
+			margin-left: auto;
+			margin-right: auto;
+			padding: 0px;
+			min-height: 100%;
+			background-color: #eeeeee;
+		}
+
+		span {
+			display: inline-block;
+			height: 100%;
+			padding: 5px 10px 2px 15px;
+			margin: 0px;
+			vertical-align: middle;
+		}
+
+		span:first-child {
+			float: left;
+			width: 244px;
+		}
+
+		span:last-child {
+			float: right;
+			width: 86px;
+			padding: 0px;
+			text-align: center;
+			vertical-align: middle;
+		}
+
+		p > span:nth-child(2) {
+			text-align: center;
+			width: 245px;
+			clear: both;
+		}
+
+		span.btn {
+			width: 50%;
+			padding: 4px 4px 6px 8px !important;
+			text-align: center;
+			vertical-align: middle;
+		}
+
+		span.btn + span.btn {
+			padding-left: 0px !important;
+		}
+
+		p {
+			margin: 0px;
+			padding: 0px;
+			height: 38px;
+			border-radius: 5px;
+			font-weight: normal;
+			font-size: 22px;
+		}
+
+		div.list p.name {
+			background: linear-gradient(top, #cc4b73, #b11e36);
+			background: -webkit-linear-gradient(top, #cc4b73, #b11e36);
+			background: -moz-linear-gradient(top, #cc4b73, #b11e36);
+			background: -ms-linear-gradient(top, #cc4b73, #b11e36);
+			color: white;
+		}
+
+		div.list p.number {
+			background: linear-gradient(top, #b7e5e6, #7ec3c9);
+			background: -webkit-linear-gradient(top, #b7e5e6, #7ec3c9);
+			background: -moz-linear-gradient(top, #b7e5e6, #7ec3c9);
+			background: -ms-linear-gradient(top, #b7e5e6, #7ec3c9);
+			color: #305c63;
+		}
+
+		div.list p.add {
+			background-color: #d0f5f5;
+			color: #7ec3c9 !important;
+			vertical-align: middle;
+		}
+
+		p.number > span:nth-child(2) {
+			background: linear-gradient(top, #d0f4f4, #8dc9ca);
+			background: -webkit-linear-gradient(top, #d0f4f4, #8dc9ca);
+			background: -moz-linear-gradient(top, #d0f4f4, #8dc9ca);
+			background: -ms-linear-gradient(top, #d0f4f4, #8dc9ca);
+		}
+
+		p.name > span:nth-child(2) {
+			background: linear-gradient(top, #d8668a, #bd3249);
+			background: -webkit-linear-gradient(top, #d8668a, #bd3249);
+			background: -moz-linear-gradient(top, #d8668a, #bd3249);
+			background: -ms-linear-gradient(top, #d8668a, #bd3249);
+		}
+
+		div.list:not(:hover) div,  div.list:not(:hover) p.add {
+			display: none;
+		}
+
+		p.add {
+			color: #ee94b1;
+		}
+
+		p.add span:first-child {
+			width: 535px;
+			text-align: right;
+			vertical-align: middle;
+		}
+
+		p.add span:last-child {
+			width: 40px;
+			text-align: center;
+			vertical-align: middle;
+			padding-top: 4px;
+			clear: none;
+		}
+
+		input[type=button] {
+			display: inline;
+			border: none;
+			border-radius: 3px;
+		}
+
+		input[type=button]:focus {
+			outline: none;
+		}
+
+		input[type=button].add {
+			width: 24px;
+			height: 24px;
+			padding: 0px 0px 26px 0px;
+			font-size: 24px;
+			font-weight: normal;
+			color: white;
+			text-align: center;
+			vertical-align: middle;
+		}
+
+		input[type=button].add:not(:active) {
+			background-color: #337984;
+		}
+
+		input[type=button].add:active {
+			background-color: #73bbc3;
+		}
+
+		input[type=button]:not(.add) {
+			width: 18px;
+			height: 18px;
+
+		}
+
+		p.number input[type=button].edit {
+			background: url(buttons.png) no-repeat;
+			background-position: -50px -6px;
+		}
+
+		p.number input[type=button].edit:active {
+			background-position: -88px -6px;
+		}
+
+		p.name input[type=button].edit {
+			background: url(buttons.png) no-repeat;
+			background-position: -126px -6px;
+		}
+
+		p.name input[type=button].edit:active {
+			background-position: -164px -6px;
+		}
+
+		p.number input[type=button].remove, p.number_editor  input[type=button].cancel {
+			background: url(buttons.png) no-repeat;
+			background-position: -69px -6px;
+		}
+
+		p.number input[type=button].remove:active, p.number_editor  input[type=button].cancel:active {
+			background-position: -107px -6px;
+		}
+
+		p.name input[type=button].remove, p.name_editor  input[type=button].cancel {
+			background: url(buttons.png) no-repeat;
+			background-position: -145px -6px;
+		}
+
+		p.name input[type=button].remove:active, p.name_editor  input[type=button].cancel:active {
+			background-position: -183px -6px;
+		}
+
+
+		p.name_editor {
+			background: linear-gradient(top, #ee94b2, #eebfce);
+			background: -webkit-linear-gradient(top, #ee94b2, #eebfce);
+			background: -moz-linear-gradient(top, #ee94b2, #eebfce);
+			background: -ms-linear-gradient(top, #ee94b2, #eebfce);
+		}
+
+		p.number_editor {
+			background: linear-gradient(top, #b8e6e5, #d0f4f4);
+			background: -webkit-linear-gradient(top, #b8e6e5, #d0f4f4);
+			background: -moz-linear-gradient(top, #b8e6e5, #d0f4f4);
+			background: -ms-linear-gradient(top, #b8e6e5, #d0f4f4);
+		}
+
+		input[type=text] {
+			width: 100%;
+			border: none;
+			border-radius: 20px;
+			background: transparent;
+			font-size: 22px;
+			padding-bottom: 4px;
+		}
+
+		p.name_editor input[type=text] {
+			color: #b11d36;
+		}
+
+		p.name_editor input[type=text]:focus {
+			outline-color: #b11d36;
+		}
+
+		p.number_editor input[type=text] {
+			color: #305c63;
+		}
+
+		p.number_editor input[type=text]:focus {
+			outline-color: #305c63;
+		}
+
+		input[type=button].save {
+			width: 29px;
+			height: 29px;
+			background: transparent;
+			padding: 0px 0px 4px 0px;
+			font-size: 16px;
+			font-weight: normal;
+			text-align: center;
+			vertical-align: middle;
+			margin-bottom: 10px;
+		}
+
+
+
+		input[type=button].save:disabled {
+			display: none;
+		}
+
+		p.name_editor input[type=button].save {
+			color: white;
+		}
+
+		p.name_editor input[type=button].save:active {
+			color: #ee94b1;
+		}
+
+		p.number_editor input[type=button].save {
+			color: #34808c;
+		}
+
+		p.number_editor input[type=button].save:active {
+			color: #b8e6e6;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="root" data-ng-app="notebook" data-ng-controller="bookCtrl">
+	<form name="formList">
+		<div id="{{x.name}}" class='list' data-ng-repeat="x in list | orderBy:'name'">
+			<p class="name" data-ng-hide="x.editor || !x.name">
+				<span data-ng-bind="x.name"></span>
+				<span data-ng-bind="(x.numbers[0].number | phone) || ''"></span>
+				<span class='buttons'>
+					<span class="btn">
+						<input class="edit" type="button" data-ng-click="edit(this.x, true);" >
+					</span>
+					<span class="btn" title="Delete person">
+						<input class="remove" type="button" data-ng-click="remove({name: this.x.name});">
+					</span>
+				</span>
+			</p>
+			<p class="name_editor" data-ng-show="x.editor"  data-ng-mouseleave="edit(this.x, false);">
+				<span>
+					<input name="{{[x.name, 'name'].join('_')}}" data-ng-model="name" type="text" required data-unique>
+				</span>
+				<span>
+					<input name="{{[x.name, 'number'].join('_')}}" data-ng-model="x.numbers[0].number" type="text" required data-phone data-unique>
+				</span>
+				<span class='buttons'>
+					<span class="btn">
+						<input class="save" type="button" value="OK" data-ng-click="update({name: name, number: x.numbers[0].number, description: x.numbers[0].description, index: x.numbers[0].index}, {name: mem.name, number: mem.num}, x)" data-ng-disabled="invalid(formList[[x.name, 'name'].join('_')], formList[[x.name, 'number'].join('_')])">
+					</span>
+					<span class="btn" title="Cancel">
+						<input class="cancel" type="button" data-ng-click="edit(this.x, false);">
+					</span>
+				</span>
+			</p>
+
+			<div data-ng-repeat="y in x.numbers">
+				<p id="{{[x.name, $index].join('_')}}" class="number" data-ng-hide="y.editor || !y.number">
+					<span data-ng-bind="y.description"></span>
+					<span data-ng-bind="y.number | phone"></span>
+					<span class='buttons'>
+						<span class="btn">
+							<input class="edit" type="button" data-ng-click="edit(this.x, this.y, true);">
+						</span>
+						<span class="btn" title="Delete number">
+							<input class="remove" type="button"  data-ng-click="remove({name: this.x.name, number: this.y.number});">
+						</span>
+					</span>
+				</p>
+				<p class="number_editor" data-ng-show="y.editor" data-ng-mouseleave="edit(this.x, this.y, false);">
+					<span>
+						<input data-ng-model="y.description" type="text">
+					</span>
+					<span>
+						<input name="{{[x.name, 'number', $index].join('_')}}" data-ng-model="y.number" type="text" required data-phone data-unique>
+					</span>
+					<span class='buttons'>
+						<span class="btn">
+							<input class="save" type="button" value="OK" data-ng-click="update({name: x.name, number: y.number, description: y.description, index: y.index}, {name: x.name, number: mem.num})" data-ng-disabled="invalid(formList[[x.name, 'number', $index].join('_')])">
+						</span>
+						<span class="btn" title="Cancel">
+							<input class="cancel" type="button" data-ng-click="edit(this.x, this.y, false);">
+						</span>
+					</span>
+				</p>
+			</div>
+			<div>
+				<p class='add' data-ng-hide="x.adder">
+					<span>Add number</span>
+					<span><input class="add" type="button" value="+" data-ng-click="adder(this.x, true);"></span>
+				</p>
+				<p class="number_editor" data-ng-show="x.adder" data-ng-mouseleave="adder(this.x, false);">
+					<span>
+						<input data-ng-model="description" type="text">
+					</span>
+					<span>
+						<input name="{{[x.name, 'number', 'add'].join('_')}}" data-ng-model="number" type="text" required data-phone data-unique>
+					</span>
+					<span class='buttons'>
+						<span class="btn">
+							<input class="save" type="button" value="OK" data-ng-click="add({name: this.x.name, description: description, number: number})" data-ng-disabled="invalid(formList[[x.name, 'number', 'add'].join('_')])">
+						</span>
+						<span class="btn" title="Cancel">
+							<input class="cancel" type="button" data-ng-click="adder(this.x, false);">
+						</span>
+					</span>
+				</p>
+			</div>
+		</div>
+		<p class='add' data-ng-hide="addName.adder">
+			<span>Add person</span>
+			<span><input class="add" type="button" value="+" data-ng-click="adder(this.addName, true);"></span>
+		</p>
+		<p class="name_editor" data-ng-show="addName.adder" data-ng-mouseleave="adder(this.addName, false);">
+			<span>
+				<input name="name" data-ng-model="name" type="text" required data-unique>
+			</span>
+			<span>
+				<input name="number" data-ng-model="number" type="text" required data-phone>
+			</span>
+			<span class='buttons'>
+				<span class="btn">
+					<input class="save" type="button" value="OK" data-ng-click="add({name: name, number: number})" data-ng-disabled="invalid(formList.name, formList.number)">
+				</span>
+				<span class="btn" title="Cancel">
+					<input class="cancel" type="button" data-ng-click="adder(this.addName, false);">
+				</span>
+			</span>
+		</p>
+	</form>
+
+	</div>
+
+	<script type="text/javascript">
+	var app = angular.module('notebook', []);
+
+	//Conver to phone view
+	app.filter('phone', function () {
+		return function (str) {
+			if (!str)
+				return '';
+			if (typeof str !== 'string')
+				str = str.toString();
+			str = str.split('');
+
+			var mask = '0 (000) 000 00 00'.split('');
+			var f = str[0];
+			if (f !== '+')
+				str[0] = parseInt(f) - 1;
+			else
+				str.shift();
+			var i = 2,
+			    res = [];
+			for (var m = 0, s = 0, ml = mask.length, sl = str.length; s < sl; ++m) {
+				if (mask[m] === '0') {
+					res.push(str[s++]);
+				} else if (m < ml) {
+					res.push(mask[m]);
+				} else if (i >= 2) {
+					res.push(' ');
+					i = 0;
+				} else {
+					res.push(str[s++]);
+					++i;
+				}
+			}
+
+			return ['+', res.join('')].join('');
+		}
+	});
+
+	//Phone format
+	app.directive('phone', function () {
+		return {
+			require: 'ngModel',
+			link: function (scope, element, attr, ctrl) {
+				ctrl.$parsers.push(function (value) {
+					if(/^\+?\d{11}$/.test(value))
+						ctrl.$setValidity('pnone', true);
+					else
+						ctrl.$setValidity('pnone', false);
+					return value;
+				});
+			}
+		}
+	});
+
+	//Unique data
+	app.directive('unique', function () {
+		function _getArea (x, y, data, fieldName) {
+			if (!x)
+				return {area: data};
+			var name = x.name;
+			if (y)
+				return {area: data[name], exept: y.number};
+			fieldName = fieldName.split('_');
+			if (fieldName.length === 2)
+				return fieldName[1] === 'name' ? {area: data, exept: name} : {area: data[name], exept: x.numbers[0].number};
+			return {area: data[name]};
+		}
+
+		function _toOneView (value) {
+			if(/^\+\d{11}$/.test(value)) {
+				var value = value.split('');
+				value.shift();
+				value[0] = parseInt(value[0]) + 1;
+				value = value.join('');
+			}
+			return value;
+		}
+		return {
+			require: 'ngModel',
+			link: function (scope, element, attr, ctrl) {
+				ctrl.$parsers.push(function (value) {
+					var area = _getArea(scope.x, scope.y, scope.data, element[0].name),
+					    exept = _toOneView(area.exept);
+					area = area.area;
+					value = _toOneView(value);
+
+					for (var key in area) {
+						var key = _toOneView(key);
+						if ((key === value) && (key!== exept)) {
+							ctrl.$setValidity('unique', false);
+							return value;
+						}
+					}
+
+					ctrl.$setValidity('unique', true);
+					return value;
+				});
+			}
+		}
+	});
+
+	app.controller('bookCtrl', function ($scope, $http) {
+		$scope.addName = {};
+
+		//Clear temporary data
+		$scope.clear = function () {
+			delete this.name;
+			delete this.number;
+			delete this.mem;
+		}
+
+		//Check fields for invalid
+		$scope.invalid = function () {
+			var invalid = false;
+			for (var i = 0, l = arguments.length; i < l; ++i) {
+				invalid = invalid || arguments[i].$invalid;
+				if (invalid)
+					break;
+			}
+			return invalid;
+		}
+
+		//Switch fields to modify data
+		$scope.edit = function (x, y, isEdit) {
+			var list = this.list;
+			for (var i = 0, l = list.length; i < l; ++i) {
+				if (x.name === list[i].name) {
+					x = list[i];
+					break;
+				}
+			}
+
+			if (arguments.length < 3 && typeof y !== 'object') {
+				if (y || isEdit) {
+					this.name = x.name;
+					this.mem = {
+						name: x.name,
+						num: x.numbers[0].number
+					};
+				} else {
+					x.name = this.name || x.name;
+					if (this.mem) {
+						x.name = this.mem.name;
+						x.numbers[0].number = this.mem.num;
+						this.clear();
+					}	
+				} 
+				x.editor = y || isEdit;
+			} else {
+				var numbers = x.numbers;
+				for (var i = 0, l = numbers.length; i < l; ++i) {
+					var num = numbers[i];
+					if (num.number != y.number)
+						continue;
+					if (isEdit) {
+						this.mem = {
+							description: num.description,
+							num: num.number
+						}
+					} else if (this.mem) {
+						num.description = this.mem.description;
+						num.number = this.mem.num;
+						this.clear();
+					}
+					num.editor = isEdit;
+				}
+
+			}
+		};
+
+		//Switch fields to add data
+		$scope.adder = function (obj, isAdder) {
+			obj.adder = isAdder;
+			this.clear();
+		}
+
+		$scope.httpError = function (response) {
+			console.log(response.status + ": " + response.statusText);
+		};
+
+		//Command sender to server
+		$scope.cmd = function (cmd, data,/*cmd, data, ...,*/ callback) {
+			var cmds = [];
+			for (var i = 0, l = arguments.length; i < l; ++i) {
+				var arg = arguments[i];
+				if (typeof arg === 'function') {
+					callback = arg;
+					break;
+				} else if ({'string': 1, 'object': 1}[typeof arg]) {
+					cmds.push(arg);
+				} else {
+					throw "Incorrect data format";	
+				}
+			}
+			$http({
+				method: 'POST',
+				url: $scope.job,
+				headers: {
+				'content-type': 'application/json'
+			},
+				data: JSON.stringify(cmds)
+			}).then(callback, $scope.httpError);
+		};
+
+		//Rebuild list Arrey by data object
+		$scope.rebuild = function () {
+			var data = this.data,
+			    list = this.list = [];
+			for (var key in data) {
+				var tmp = data[key],
+				    numbers = [];
+					for (var n in tmp)
+						numbers.push({
+							index: parseInt(tmp[n].index),
+							description: tmp[n].description || '',
+							number: n,
+
+						});
+					if (!numbers.length)
+						numbers.push({index: 0, description: '', number: ''});
+					list.push({name: key, numbers: numbers.sort(function (a, b) {var r = a.index - b.index; return r;})});
+			}
+			this.clear();
+		};
+
+		//Add item
+		$scope.add = function (values) {
+			for (var key in values)
+				delete this[key];
+			this.cmd('add', values, function (response) {
+				var data = $scope.data,
+				    name = values.name,
+				    number = values.number,
+				    index = 0;
+				if (!data[name]) {
+					data[name] = {};
+				} else {
+					var list = $scope.list,
+					    index;
+					for (var i = 0, l = list.length; i < l; ++i) {
+						var item = list[i];
+						if (item.name === name) {
+							var numbers = item.numbers;
+							for (var j = 0, n = numbers.length; j < n; ++j) {
+								var num = numbers[j];
+								if (num.number === number) {
+									index = num.index;
+									break;
+								}
+							}
+							if (!index)
+								index = num.index + 1;
+						}
+					}
+				}
+				data[name][number] = {
+					description: values.description,
+					index: index
+				};
+				$scope.rebuild();
+			});
+		};
+
+		//Remove item
+		$scope.remove = function (values) {
+			this.cmd('delete', values, function (response) {
+				var data = $scope.data;
+				if (!values.number)
+					delete data[values.name];
+				else
+					delete data[values.name][values.number];
+				$scope.rebuild();
+			});
+		};
+
+		//Update item
+		$scope.update = function (add, del) {
+			var cmds = ['delete', del, 'add', add];
+			del._number = del.number;
+			if (add.name !== del.name) {
+				var data = this.data[del.name];
+				for (var key in data) {
+					if (key === del.number)
+						continue;
+					cmds.push('add', data[key]);
+					data[key].number = key;
+					data[key].name = add[name];
+				}
+				delete del.number;
+			}
+			cmds.push(function (response) {
+				var data = $scope.data;
+				if (add.name !== del.name) {
+					data[add.name] = data[del.name];
+					delete data[del.name];
+				}
+				if ('_number' in del) {
+					delete data[add.name][del._number];
+					data[add.name][add.number] = {description: add.description, index: add.index};
+				}
+				$scope.rebuild();
+			});
+			this.cmd.apply(this, cmds);
+		};
+
+		//Get data at the initial
+		$http({
+			method: 'POST',
+			url: ''
+		}).then(function (response) {
+			$scope.job = response.data;
+			$scope.cmd('data', function (response) {
+				$scope.data = response.data[0] || {};
+				$scope.rebuild();
+			});
+		}, $scope.httpError);
+	});
+	</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+1) взять AngularJS
+2) разработать телефонную записную книжку
+3) 2 сущности: Person { name, email }   Phone {  prefix, num  }
+	1 Person -> N Phones
+4) добавления / удаления  Person / Phon
+
